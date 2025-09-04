@@ -81,12 +81,6 @@ Proyek ini bertujuan untuk:
 Visualisasi insight churn Spotify tersedia dalam bentuk dashboard:  
 
 - **Notebook Analisis:** [analisis-spotify-customer-churn.ipynb](https://github.com/xxvlrapss/spotify-churn-dashboard/blob/main/analisis-spotify-customer-churn.ipynb)  
-- **Dashboard (Power BI / Tableau / PDF, jika ada):** *coming soon*  
-
-> Dashboard ini akan menampilkan:  
-> - Distribusi churn berdasarkan subscription & engagement  
-> - Korelasi churn dengan skips, playlist, login activity  
-> - Segmentasi churn berdasarkan usia & plan  
 
 ---
 
