@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Churn Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            color: #1a202c;
+        }
+        .container-card {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .heading {
+            font-weight: 700;
+            color: #1a202c;
+        }
+        .subheading {
+            font-weight: 600;
+            color: #4a5568;
+        }
+        .info-card {
+            background-color: #f7fafc;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            text-align: center;
+        }
+        .info-card-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #4c51bf;
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            flex-grow: 1;
+        }
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .kpi-label {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #4a5568;
+        }
+    </style>
+</head>
+<body class="p-8">
+
+    <div class="max-w-7xl mx-auto space-y-8">
+        <!-- Dashboard Header -->
+        <header class="text-center">
+            <h1 class="heading text-4xl mb-2">Spotify Churn Dashboard</h1>
+            <p class="subheading text-lg">Visualisasi Data Churn Pelanggan Spotify</p>
+        </header>
+
+        <!-- KPI Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="container-card text-center items-center">
+                <span class="kpi-value text-green-500">987</span>
+                <span class="kpi-label mt-2">Jumlah total pengguna</span>
+            </div>
+            <div class="container-card text-center items-center">
+                <span class="kpi-value text-red-500">173</span>
+                <span class="kpi-label mt-2">Jumlah pengguna churn</span>
+            </div>
+            <div class="container-card text-center items-center">
+                <span class="kpi-value text-purple-500">17.5%</span>
+                <span class="kpi-label mt-2">Tingkat Churn</span>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Content -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+            <!-- Bar Chart 1: Churn Rate by Country -->
+            <div class="container-card">
+                <h2 class="text-2xl heading mb-4">Tingkat Churn berdasarkan Negara</h2>
+                <div class="chart-container">
+                    <canvas id="churnByCountry"></canvas>
+                </div>
+                <div class="text-center mt-4">
+                    <p class="text-gray-600">
+                        <span class="font-bold text-green-500">Australia</span> memimpin churn (26%) sementara <span class="font-bold text-pink-500">UK</span> mempertahankan yang terbaik (10%).
+                    </p>
+                </div>
+            </div>
+
+            <!-- Bar Chart 2: Churn by Activity Level -->
+            <div class="container-card">
+                <h2 class="text-2xl heading mb-4">Risiko Churn Paling Tinggi di Pengguna Ringan (39%)</h2>
+                <div class="chart-container">
+                    <canvas id="churnByActivity"></canvas>
+                </div>
+                <div class="text-center mt-4">
+                    <p class="text-gray-600">
+                        <span class="font-bold text-green-500">Pengguna ringan</span> churn 3x lebih banyak daripada pengguna berat.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bar Chart 3: Churn by Recency and Subscription Type -->
+        <div class="container-card">
+            <h2 class="text-2xl heading mb-4">Churn berdasarkan Aktivitas Terakhir dan Jenis Langganan</h2>
+            <div class="chart-container">
+                <canvas id="churnByRecency"></canvas>
+            </div>
+            <div class="text-center mt-4">
+                <p class="text-gray-600">
+                    <span class="font-bold text-green-500">Pengguna gratis</span> churn lebih awal, sementara <span class="font-bold text-pink-500">pengguna premium</span> cenderung bertahan lebih lama.
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Data for the first bar chart (Churn Rate by Country)
+        const dataChurnByCountry = {
+            labels: ['au', 'de', 'us', 'ca', 'in', 'ru', 'fr', 'br', 'pk', 'uk'],
+            datasets: [{
+                label: 'Tingkat Churn %',
+                data: [26, 22, 22, 21, 19, 15, 14, 14, 14, 10],
+                backgroundColor: (context) => {
+                    const label = context.chart.data.labels[context.dataIndex];
+                    if (label === 'au') {
+                        return '#2A8E5C'; // Green for Australia
+                    } else if (label === 'uk') {
+                        return '#E988A7'; // Pink for UK
+                    } else {
+                        return '#E988A7'; // Pink for all others
+                    }
+                },
+                borderColor: (context) => {
+                    const label = context.chart.data.labels[context.dataIndex];
+                    if (label === 'au') {
+                        return '#2A8E5C'; // Green for Australia
+                    } else if (label === 'uk') {
+                        return '#E988A7'; // Pink for UK
+                    } else {
+                        return '#E988A7'; // Pink for all others
+                    }
+                },
+                borderWidth: 1,
+                borderRadius: 5,
+            }]
+        };
+
+        // Configuration for the first chart
+        const configChurnByCountry = {
+            type: 'bar',
+            data: dataChurnByCountry,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y + '%';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Tingkat Churn %'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Negara'
+                        }
+                    }
+                }
+            }
+        };
+
+        // Render the first chart
+        const churnByCountryCtx = document.getElementById('churnByCountry').getContext('2d');
+        const churnByCountryChart = new Chart(churnByCountryCtx, configChurnByCountry);
+
+        // Data for the second bar chart (Churn Rate by Activity Level)
+        const dataChurnByActivity = {
+            labels: ['light_user', 'moderate_user', 'heavy_user'],
+            datasets: [{
+                label: 'Tingkat Churn %',
+                data: [39, 12, 0],
+                backgroundColor: (context) => {
+                    const label = context.chart.data.labels[context.dataIndex];
+                    return label === 'light_user' ? '#2A8E5C' : '#E988A7';
+                },
+                borderColor: (context) => {
+                    const label = context.chart.data.labels[context.dataIndex];
+                    return label === 'light_user' ? '#2A8E5C' : '#E988A7';
+                },
+                borderWidth: 1,
+                borderRadius: 5,
+            }]
+        };
+
+        // Configuration for the second chart
+        const configChurnByActivity = {
+            type: 'bar',
+            data: dataChurnByActivity,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y + '%';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Tingkat Churn %'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Tingkat Aktivitas'
+                        }
+                    }
+                }
+            }
+        };
+
+        // Render the second chart
+        const churnByActivityCtx = document.getElementById('churnByActivity').getContext('2d');
+        const churnByActivityChart = new Chart(churnByActivityCtx, configChurnByActivity);
+
+        // Data for the third bar chart (Churn by Recency and Subscription Type)
+        const dataChurnByRecency = {
+            labels: ['15-30d', '0-3d', '8-14d', '4-7d', '30d+'],
+            datasets: [
+                {
+                    label: 'Gratis',
+                    data: [39, 6, 26, 19, 7],
+                    backgroundColor: '#2A8E5C',
+                    borderColor: '#2A8E5C',
+                    borderWidth: 1,
+                    borderRadius: 5,
+                },
+                {
+                    label: 'Premium',
+                    data: [25, 33, 4, 7, 7],
+                    backgroundColor: '#E988A7',
+                    borderColor: '#E988A7',
+                    borderWidth: 1,
+                    borderRadius: 5,
+                }
+            ]
+        };
+
+        // Configuration for the third chart
+        const configChurnByRecency = {
+            type: 'bar',
+            data: dataChurnByRecency,
+            options: {
+                indexAxis: 'y', // Make it a horizontal bar chart
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'right'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.x !== null) {
+                                    label += context.parsed.x;
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Aktivitas Terakhir'
+                        },
+                        stacked: true
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Jumlah Pelanggan yang Churn'
+                        },
+                        stacked: true
+                    }
+                }
+            }
+        };
+
+        // Render the third chart
+        const churnByRecencyCtx = document.getElementById('churnByRecency').getContext('2d');
+        const churnByRecencyChart = new Chart(churnByRecencyCtx, configChurnByRecency);
+
+    </script>
+</body>
+</html>
