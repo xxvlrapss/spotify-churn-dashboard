@@ -85,5 +85,5 @@ Visualisasi insight churn Spotify tersedia dalam bentuk dashboard:
 ---
 
 ## 📎 References  
-- Kaggle: [Spotify Customer Churn Dataset]([https://www.kaggle.com/](https://www.kaggle.com/datasets/abdulwadood11220/spotify-customer-churn-dataset))  
+- Kaggle: [Spotify Customer Churn Dataset]([https://www.kaggle.com/](https://www.kaggle.com/datasets/abdulwadood11220/spotify-customer-churn-dataset/)  
 - Kaggle Notebook: [Analisis Spotify Customer Churn](https://www.kaggle.com/code/dimasprayoga/analisis-spotify-customer-churn)  
